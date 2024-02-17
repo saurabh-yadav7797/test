@@ -1,29 +1,31 @@
 const express = require('express');
 const app = express();
 
-const requestLoggerMiddleware = (req, res, next) => {
-  const timestamp = new Date().toISOString();
-  const { method, url } = req;
-  const accessToken = req.headers.authorization || 'N/A';
+function logRequest(req, res, next) {
+    const timestamp = new Date().toISOString();
+    const method = req.method;
+    const url = req.originalUrl;
+    const accessToken = req.headers.authorization || 'No access token provided';
+    console.log(`[${timestamp}] ${method}: ${url}, AccessToken: "${accessToken}"`);
+    next();
+}
 
-  const logMessage = `[${timestamp}] ${method}: ${url}, AccessToken: "${accessToken}"`;
+app.use(logRequest);
 
-  console.log(logMessage);
-
-  next();
-};
-
-app.use(requestLoggerMiddleware);
-
-app.get('/api/users', (req, res) => {
-  res.send('List of users');
+app.get('/API/users', (req, res) => {
+    res.send('List of users');
 });
 
-app.post('/api/posts', (req, res) => {
-  res.send('Post created');
+app.post('/API/users', (req, res) => {
+    res.send('Create a new user');
 });
 
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+
+
